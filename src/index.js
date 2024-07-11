@@ -47,21 +47,33 @@ document.addEventListener("DOMContentLoaded", () => {
   /************  SHOW INITIAL CONTENT  ************/
 
   // Convert the time remaining in seconds to minutes and seconds, and pad the numbers with zeros if needed
-  const minutes = Math.floor(quiz.timeRemaining / 60).toString().padStart(2, "0");
-  const seconds = (quiz.timeRemaining % 60).toString().padStart(2, "0");
-
+  const minutes = (ms) => Math.floor(quiz.timeRemaining / 60).toString().padStart(2, "0")
+  const seconds = (ms) => (quiz.timeRemaining % 60).toString().padStart(2, "0")
   // Display the time remaining in the time remaining container
   const timeRemainingContainer = document.getElementById("timeRemaining");
-  timeRemainingContainer.innerText = `${minutes}:${seconds}`;
+  timeRemainingContainer.innerText = `${minutes()}:${seconds()}`;
 
   // Show first question
   showQuestion();
-
 
   /************  TIMER  ************/
 
   let timer;
 
+  /* Timer countdown */
+  const startCountdown = () => {
+    timer = setInterval(() => {
+      quiz.timeRemaining--
+      timeRemainingContainer.innerText = `${minutes()}:${seconds()}`
+      if (quiz.timeRemaining === 0) {
+        stopCountDown()
+        showResults()
+      }
+    }, 1000)
+  }
+
+  startCountdown()
+  const stopCountDown = () => clearInterval(timer)
 
   /************  EVENT LISTENERS  ************/
 
@@ -194,7 +206,13 @@ document.addEventListener("DOMContentLoaded", () => {
     quizView.style.display = "flex"
     quiz.currentQuestionIndex = 0
     quiz.correctAnswers = 0
-    quiz.shuffleQuestions();
-    showQuestion();
+    quiz.shuffleQuestions()
+    showQuestion()
+    quiz.timeRemaining = quizDuration
+    timeRemainingContainer.innerText = `${minutes()}:${seconds()}`;
+    startCountdown()
   }
+
+
 });
+
